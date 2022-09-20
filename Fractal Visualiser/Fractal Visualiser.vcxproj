@@ -151,7 +151,10 @@
     <ClInclude Include="src\vertex\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\burningship.shader" />
     <None Include="res\shaders\fractal.shader" />
+    <None Include="res\shaders\mandelbrot.shader" />
+    <None Include="res\shaders\tricorn.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,7 +22,6 @@ GLFWwindow* Application::m_Window = nullptr;
 
 unsigned int Application::resolutionLoc = 0;
 unsigned int Application::mousePosLoc = 0;
-Shader* Application::m_Shader = nullptr;
 
 // information for quad that we render the fractal onto
 float vertices[] = {
@@ -57,7 +56,6 @@ void Application::Run()
 
 	// initialise window
 	// ----------------
-
 	Window::Init("Fractal Visualiser", 1280, 720);
 	m_Window = Window::GetWindow();
 
@@ -76,11 +74,20 @@ void Application::Run()
 	glfwSetWindowUserPointer(m_Window, this);
 
 	// create fractal shader - get uniform locations
-	// ---------------------
+	// --------------------
+	m_mandelbrotShader = Shader("res/shaders/mandelbrot.shader");
+	m_mandelbrotShader.InitShader();
 
-	m_Shader = new Shader("res/shaders/fractal.shader");
-	int shaderID = m_Shader->GetID();
+	m_burningshipShader = Shader("res/shaders/burningship.shader");
+	m_burningshipShader.InitShader();
 
+	m_tricornShader = Shader("res/shaders/tricorn.shader");
+	m_tricornShader.InitShader();
+
+	p_selectedShader = &m_mandelbrotShader;
+	p_selectedShader->Bind();
+
+	int shaderID = p_selectedShader->GetID();
 	resolutionLoc = glGetUniformLocation(shaderID, "resolution");
 	locationLoc = glGetUniformLocation(shaderID, "location");
 	mousePosLoc = glGetUniformLocation(shaderID, "mousePos");
@@ -105,7 +112,6 @@ void Application::Run()
 	VAO.Bind();
 	EBO.Bind();
 
-	m_Shader->Bind();
 	glUniform2i(resolutionLoc, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	ImGui::CreateContext();
@@ -137,6 +143,7 @@ void Application::Run()
 		// ----------
 		ImGui::SetNextWindowSize({ 0,0 });
 		ImGui::Begin("Control Menu");
+		fractalSelector = ImGui::Combo("Fractals", &selectedFractal, fractalOptions, numFractals);
 		iterationsSlider = ImGui::SliderInt("Iterations", &m_Iterations, 0, 10000);
 		juliaModeCheckbox = ImGui::Checkbox("Julia Set Mode", &m_juliaMode);
 
@@ -146,6 +153,7 @@ void Application::Run()
 		"+/- - zoom\n"
 		"J - Julia set mode toggle\n"
 		"F - Julia set pause toggle\n"
+		"R - Reset fractal position\n"
 		);
 
 		ImGui::End();
@@ -164,7 +172,6 @@ void Application::Run()
 		glfwPollEvents();
 	}
 
-	delete m_Shader;
 	glfwTerminate();
 
 }
@@ -181,6 +188,12 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 		}
 		case GLFW_KEY_F: {
 			ptr->m_juliaPaused = !ptr->m_juliaPaused;
+			break;
+		}
+		case GLFW_KEY_R: {
+			ptr->m_Location.x = 0.0f;
+			ptr->m_Location.y = 0.0f;
+			glUniform2f(ptr->locationLoc, ptr->m_Location.x, ptr->m_Location.y);
 			break;
 		}
 		}
@@ -259,5 +272,27 @@ void Application::CheckUI()
 	}
 	if (juliaModeCheckbox) {
 		glUniform1i(juliaModeLoc, m_juliaMode);
+	}
+
+	// change selected fractal
+	if (fractalSelector) {
+		switch (selectedFractal) {
+		case 0: {
+			p_selectedShader = &m_mandelbrotShader;
+			break;
+		}
+		case 1: {
+			p_selectedShader = &m_burningshipShader;
+			break;
+		}
+		case 2: {
+			p_selectedShader = &m_tricornShader;
+			break;
+		}
+		}
+		p_selectedShader->Bind();
+		int shaderID = p_selectedShader->GetID();
+		glUniform2i(resolutionLoc, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 	}
 }

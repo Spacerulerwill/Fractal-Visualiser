@@ -18,7 +18,7 @@ protected:
 
 public:
     Shader(std::string filepath);
-    Shader() {}
+    Shader() : u_ID(0) {}
     ~Shader();
 
     void Bind() const;
@@ -27,6 +27,7 @@ public:
     int GetLocation(std::string name);
 
     ShaderSources ParseShader(const std::string& filepath);
+    void InitShader();
     unsigned int CompileShader(unsigned int type, std::string& source);
     unsigned int CreateShader(std::string& vertex_source, std::string& fragmement_source);
 };

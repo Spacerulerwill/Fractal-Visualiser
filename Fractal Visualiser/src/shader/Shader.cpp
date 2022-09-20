@@ -2,10 +2,14 @@
 #include <iostream> 
 
 Shader::Shader(std::string filepath) : m_Filepath(filepath) {
-    ShaderSources shaders = ParseShader(filepath);
-    u_ID = CreateShader(shaders.Vertex, shaders.Fragment);
+    InitShader();
 }
 
+void Shader::InitShader()
+{
+    ShaderSources shaders = ParseShader(m_Filepath);
+    u_ID = CreateShader(shaders.Vertex, shaders.Fragment);
+}
 ShaderSources Shader::ParseShader(const std::string& filepath) {
 
     std::ifstream stream(filepath);

@@ -19,20 +19,32 @@ private:
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-	static Shader* m_Shader;
+	// shaders
+	Shader m_mandelbrotShader;
+	Shader m_burningshipShader;
+	Shader m_tricornShader;
+	Shader* p_selectedShader = nullptr;
+
 	static GLFWwindow* m_Window;
 
-	// fractal properties
+	// fractal selection
+	int selectedFractal = 0;
+	static constexpr unsigned int numFractals = 3;
+	const char* fractalOptions[numFractals] = {"Mandelbrot", "Burning Ship", "Tricorn"};
+
+	// fractal properties - uniforms
 	Vec2 m_Location  = {0.0f, 0.0f};
 	float m_Zoom = 2.0f;
 	bool m_juliaMode = false;
 	int m_Iterations = 200;
 
+	// other properties - non uniform
 	bool m_juliaPaused = false;
 
-	// sliders
+	// ui elements
 	bool iterationsSlider = false;
 	bool juliaModeCheckbox = false;
+	bool fractalSelector = false;
 
 	void ProcessInput();
 	void CheckUI();
