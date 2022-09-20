@@ -69,8 +69,10 @@ void Application::Run()
 		std::exit(-1);
 	}
 
+	// GLFW callback functions
+	// -----------------------
 	glfwSetFramebufferSizeCallback(m_Window, Application::framebuffer_size_callback);
-	glfwSetCursorPosCallback(m_Window, Application::mouse_cursor_pos_callback);
+	glfwSetKeyCallback(m_Window, Application::key_callback);
 	glfwSetWindowUserPointer(m_Window, this);
 
 	// create fractal shader - get uniform locations
@@ -137,12 +139,24 @@ void Application::Run()
 		ImGui::Begin("Control Menu");
 		iterationsSlider = ImGui::SliderInt("Iterations", &m_Iterations, 0, 10000);
 		juliaModeCheckbox = ImGui::Checkbox("Julia Set Mode", &m_juliaMode);
+
+		ImGui::Text
+		("Controls: \n\n"
+		"Arrow Keys - pan\n"
+		"+/- - zoom\n"
+		"J - Julia set mode toggle\n"
+		"F - Julia set pause toggle\n"
+		);
+
 		ImGui::End();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		CheckUI();
+
+		if (m_juliaMode && !m_juliaPaused)
+			UpdateShaderMousePosition();
 
 		// glfw: swap buffers and poll IO events (key presses, mouse interactions etc.)
 		// -------------------------------------------------------------------------------
@@ -154,29 +168,45 @@ void Application::Run()
 	glfwTerminate();
 
 }
+void Application::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	Application* ptr = (Application*)glfwGetWindowUserPointer(window);
+
+	if (action == GLFW_PRESS) {
+		switch (key) {
+		case GLFW_KEY_J: {
+			ptr->m_juliaMode = !ptr->m_juliaMode;
+			glUniform1i(ptr->juliaModeLoc, ptr->m_juliaMode);
+			break;
+		}
+		case GLFW_KEY_F: {
+			ptr->m_juliaPaused = !ptr->m_juliaPaused;
+			break;
+		}
+		}
+	}
+
+}
 void Application::framebuffer_size_callback(GLFWwindow * window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 	glUniform2i(resolutionLoc, width, height);
 }
 
-void Application::mouse_cursor_pos_callback(GLFWwindow* window, double xposIn, double yposIn) {
-	Application* ptr = (Application*)glfwGetWindowUserPointer(window);
-
+void Application::UpdateShaderMousePosition() {
 	int width, height;
 	glfwGetWindowSize(m_Window, &width, &height);
 
-	float zoom = ptr->m_Zoom;
-	float xLoc = ptr->m_Location.x;
-	float yLoc = ptr->m_Location.y;
+	double mouseX, mouseY;
+	glfwGetCursorPos(m_Window, &mouseX, &mouseY);
 
-	float mouseX = static_cast<float>(xposIn);
-	float mouseY = static_cast<float>(yposIn);
+	mouseX = static_cast<int>(mouseX);
+	mouseY = static_cast<int>(mouseY);
 
-	float minR = ((-0.5 * width / height) * zoom) + xLoc;
-	float maxR = ((0.5 * width / height) * zoom) + xLoc;
-	float minI = -0.5 * zoom - yLoc;
-	float maxI = 0.5 * zoom - yLoc;
+	float minR = ((-0.5 * width / height) * m_Zoom) + m_Location.x;
+	float maxR = ((0.5 * width / height) * m_Zoom) + m_Location.x;
+	float minI = -0.5 * m_Zoom - m_Location.y;
+	float maxI = 0.5 * m_Zoom - m_Location.y;
 
 	float xpos = LinearInterpolate(mouseX, width, minR, maxR);
 	float ypos = LinearInterpolate(mouseY, height, minI, maxI);

@@ -17,7 +17,7 @@ private:
 
 	// callbacks
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	static void mouse_cursor_pos_callback(GLFWwindow* window, double xposIn, double yposIn);
+	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	static Shader* m_Shader;
 	static GLFWwindow* m_Window;
@@ -28,10 +28,11 @@ private:
 	bool m_juliaMode = false;
 	int m_Iterations = 200;
 
+	bool m_juliaPaused = false;
 
 	// sliders
-	bool iterationsSlider;
-	bool juliaModeCheckbox;
+	bool iterationsSlider = false;
+	bool juliaModeCheckbox = false;
 
 	void ProcessInput();
 	void CheckUI();
@@ -51,6 +52,8 @@ private:
 	// functions
 	template<typename T>
 	static inline T LinearInterpolate(int x, int width, T minR, T maxR);
+
+	void UpdateShaderMousePosition();
 
 	
 public:

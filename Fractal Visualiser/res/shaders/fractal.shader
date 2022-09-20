@@ -73,13 +73,8 @@ void main()
     uv.x *= ratio;
     uv -= vec2(ratio / 2, 0.5); //move center of mandelbrot to center of screen
 
-    if (juliaMode) {
-        uv *= 2.0;
-    }
-    else {
-        uv *= zoom; //zoom
-        uv += location;
-    }
+    uv *= zoom; //zoom
+    uv += location; // position
 
     // flip vertically
     uv.y *= -1;
