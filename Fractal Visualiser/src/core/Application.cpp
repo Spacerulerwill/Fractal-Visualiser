@@ -291,8 +291,12 @@ void Application::CheckUI()
 		}
 		}
 		p_selectedShader->Bind();
+
+		int width, height;
+		glfwGetWindowSize(m_Window, &width, &height);
+
 		int shaderID = p_selectedShader->GetID();
-		glUniform2i(resolutionLoc, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glUniform2i(resolutionLoc, width, height);
 
 	}
 }
