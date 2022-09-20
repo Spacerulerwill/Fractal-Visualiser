@@ -43,15 +43,9 @@ Application::Application()
 
 // linear interpolation for pixel coordinate to points in the imaginary plane
 template<typename T>
-T Application::mapToReal(int x, int width, T minR, T maxR) {
+T Application::LinearInterpolate(int x, int width, T minR, T maxR) {
 	T range = maxR - minR;
 	return x * (range / width) + minR;
-}
-
-template<typename T>
-T Application::mapToImaginary(int y, int height, T minI, T maxI) {
-	T range = maxI - minI;
-	return y * (range / height) + minI;
 }
 
 void Application::Run()
@@ -184,8 +178,8 @@ void Application::mouse_cursor_pos_callback(GLFWwindow* window, double xposIn, d
 	float minI = -0.5 * zoom - yLoc;
 	float maxI = 0.5 * zoom - yLoc;
 
-	float xpos = mapToReal(mouseX, width, minR, maxR);
-	float ypos = mapToImaginary(mouseY, height, minI, maxI);
+	float xpos = LinearInterpolate(mouseX, width, minR, maxR);
+	float ypos = LinearInterpolate(mouseY, height, minI, maxI);
 
 	glUniform2f(mousePosLoc, xpos, ypos);
 }

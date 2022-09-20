@@ -50,10 +50,8 @@ private:
 
 	// functions
 	template<typename T>
-	static inline T mapToReal(int x, int width, T minR, T maxR);
+	static inline T LinearInterpolate(int x, int width, T minR, T maxR);
 
-	template<typename T>
-	static inline T mapToImaginary(int y, int height, T minI, T maxI);
 	
 public:
 	Application();
