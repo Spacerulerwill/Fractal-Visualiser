@@ -297,6 +297,8 @@ void Application::CheckUI()
 
 		int shaderID = p_selectedShader->GetID();
 		glUniform2i(resolutionLoc, width, height);
+		glUniform1f(zoomLoc, m_Zoom);
+		glUniform2f(locationLoc, m_Location.x, m_Location.y);
 
 	}
 }
