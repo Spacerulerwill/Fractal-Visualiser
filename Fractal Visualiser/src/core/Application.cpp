@@ -194,6 +194,7 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 			ptr->m_Location.x = 0.0f;
 			ptr->m_Location.y = 0.0f;
 			glUniform2f(ptr->locationLoc, ptr->m_Location.x, ptr->m_Location.y);
+			glUniform1f(ptr->zoomLoc, ptr->m_Zoom);
 			break;
 		}
 		}
