@@ -55,10 +55,6 @@ private:
 	static unsigned int mousePosLoc;
 	unsigned int juliaModeLoc = 0;
 	unsigned int zoomLoc = 0;
-	unsigned int color1Loc = 0;
-	unsigned int color2Loc = 0;
-	unsigned int color3Loc = 0;
-	unsigned int color4Loc = 0;
 	unsigned int iterationsLoc = 0;
 
 	// functions

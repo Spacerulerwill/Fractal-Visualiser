@@ -93,10 +93,6 @@ void Application::Run()
 	mousePosLoc = glGetUniformLocation(shaderID, "mousePos");
 	juliaModeLoc = glGetUniformLocation(shaderID, "juliaMode");
 	zoomLoc = glGetUniformLocation(shaderID, "zoom");
-	color1Loc = glGetUniformLocation(shaderID, "color_1");
-	color2Loc = glGetUniformLocation(shaderID, "color_2");
-	color3Loc = glGetUniformLocation(shaderID, "color_3");
-	color4Loc = glGetUniformLocation(shaderID, "color_4");
 	iterationsLoc = glGetUniformLocation(shaderID, "iterations");
 
 	// create buffers for rendering the quad
@@ -299,8 +295,11 @@ void Application::CheckUI()
 
 		int shaderID = p_selectedShader->GetID();
 		glUniform2i(resolutionLoc, width, height);
-		glUniform1f(zoomLoc, m_Zoom);
 		glUniform2f(locationLoc, m_Location.x, m_Location.y);
+		glUniform1f(zoomLoc, m_Zoom);
+		glUniform1i(juliaModeLoc, m_juliaMode);
+		glUniform1i(iterationsLoc, m_Iterations);
+
 
 	}
 }

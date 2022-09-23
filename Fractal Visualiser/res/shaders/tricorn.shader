@@ -13,15 +13,13 @@ void main()
 
 #version 330
 
+#define B 4.
+
 uniform ivec2 resolution;
 uniform vec2 location = vec2(0, 0);
 uniform vec2 mousePos;
 uniform bool juliaMode = false;
 uniform float zoom  = 2.0;
-uniform float color_1 = 0.0;
-uniform float color_2 = 0.0;
-uniform float color_3 = 0.0;
-uniform float color_4 = 0.0;
 uniform int iterations = 200;
 
 out vec4 FragColor;
@@ -35,13 +33,8 @@ vec2 conjsquare(vec2 z)
     return z;
 }
 
-vec3 hsv2rgb(vec3 hue) {
-    vec4 K = vec4(color_1, color_2, color_3, color_4);
-    vec3 p = abs(fract(hue.xxx + K.xyz) * 6.0 - K.www);
-    return hue.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), hue.y);
-}
 
-vec3 mandelbrot(vec2 point) {
+float tricorn(vec2 point) {
     vec2 z;
 
     if (juliaMode) { //z is point - julia set
@@ -61,14 +54,16 @@ vec3 mandelbrot(vec2 point) {
         if (dot(z, z) > 4.0) break;
     }
 
-    //calculate color based on that
-    float hue = iters / float(iterations);
+    return iters - log(log(dot(z, z)) / log(B)) / log(2.);
+}
 
-    return hsv2rgb(vec3(hue, 1.0, 1.0));
+vec3 pal(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
+    return a + b * cos(6.28318 * (c * t + d));
 }
 
 void main()
 {
+
     vec2 uv = gl_FragCoord.xy / vec2(resolution);
     float ratio = float(resolution.x) / resolution.y;
     uv.x *= ratio;
@@ -80,5 +75,11 @@ void main()
     // flip vertically
     uv.y *= -1;
 
-    FragColor = vec4(mandelbrot(uv), 1.0);
+    float sn = float(tricorn(uv)) / iterations;
+
+    vec3 color = pal(fract(6. * sn), vec3(.5), vec3(0.5),
+        vec3(1.0), vec3(.0, .33, .67));
+
+
+    FragColor = vec4(color, 1.0);
 }
