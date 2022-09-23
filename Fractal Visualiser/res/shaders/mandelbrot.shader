@@ -21,6 +21,10 @@ uniform vec2 mousePos = vec2(0, 0);
 uniform bool juliaMode = false;
 uniform float zoom  = 2.0;
 uniform int iterations = 200;
+uniform vec3 color_1 = vec3(0.5);
+uniform vec3 color_2 = vec3(0.5);
+uniform vec3 color_3 = vec3(1.0);
+uniform vec3 color_4 = vec3(0.0, 0.33, 0.67);
 
 out vec4 FragColor;
 
@@ -55,8 +59,8 @@ float mandelbrot(vec2 point) {
     return iters - log(log(dot(z, z)) / log(B)) / log(2.);
 }
 
-vec3 pal(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
-    return a + b * cos(6.28318 * (c * t + d));
+vec3 pal(float t) {
+    return color_1 + color_2 * cos(6.28318 * (color_3 * t + color_4));
 }
 
 void main()
@@ -75,8 +79,7 @@ void main()
 
     float sn = float(mandelbrot(uv)) / iterations;
 
-    vec3 color = pal(fract(6. * sn), vec3(.5), vec3(0.5),
-        vec3(1.0), vec3(.0, .33, .67));
+    vec3 color = pal(fract(6. * sn));
     
 
     FragColor = vec4(color, 1.0);

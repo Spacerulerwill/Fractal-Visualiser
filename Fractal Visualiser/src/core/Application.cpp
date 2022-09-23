@@ -4,7 +4,6 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-
 #include <core/Window.h>
 #include <vertex/IndexBuffer.h>
 #include <vertex/VertexArray.h>
@@ -94,6 +93,10 @@ void Application::Run()
 	juliaModeLoc = glGetUniformLocation(shaderID, "juliaMode");
 	zoomLoc = glGetUniformLocation(shaderID, "zoom");
 	iterationsLoc = glGetUniformLocation(shaderID, "iterations");
+	color1Loc = glGetUniformLocation(shaderID, "color_1");
+	color2Loc = glGetUniformLocation(shaderID, "color_2");
+	color3Loc = glGetUniformLocation(shaderID, "color_3");
+	color4Loc = glGetUniformLocation(shaderID, "color_4");
 
 	// create buffers for rendering the quad
 	VertexBufferLayout layout;
@@ -116,6 +119,8 @@ void Application::Run()
 	ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
+	float color[] = { 1,2,3 };
+
 	// application loop
 	// ---------------
 	while (!glfwWindowShouldClose(m_Window)) {
@@ -137,11 +142,17 @@ void Application::Run()
 
 		// ImGui menu
 		// ----------
+
 		ImGui::SetNextWindowSize({ 0,0 });
 		ImGui::Begin("Control Menu");
 		fractalSelector = ImGui::Combo("Fractals", &selectedFractal, fractalOptions, numFractals);
 		iterationsSlider = ImGui::SliderInt("Iterations", &m_Iterations, 0, 10000);
 		juliaModeCheckbox = ImGui::Checkbox("Julia Set Mode", &m_juliaMode);
+
+		color1Selector = ImGui::SliderFloat3("Color 1", m_Color1, 0.0f, 1.0f);
+		color2Selector = ImGui::SliderFloat3("Color 2", m_Color2, 0.0f, 1.0f);
+		color3Selector = ImGui::SliderFloat3("Color 3", m_Color3, 0.0f, 1.0f);
+		color4Selector = ImGui::SliderFloat3("Color 4", m_Color4, 0.0f, 1.0f);
 
 		ImGui::Text
 		("Controls: \n\n"
@@ -265,6 +276,7 @@ void Application::ProcessInput()
 
 void Application::CheckUI()
 {
+	// menu widgets and unfiorm updates
 	if (iterationsSlider) {
 		glUniform1i(iterationsLoc, m_Iterations);
 	}
@@ -272,6 +284,19 @@ void Application::CheckUI()
 		glUniform1i(juliaModeLoc, m_juliaMode);
 	}
 
+	// color changes
+	if (color1Selector) {
+		glUniform3f(color1Loc, m_Color1[0], m_Color1[1], m_Color1[2]);
+	}
+	if (color2Selector) {
+		glUniform3f(color2Loc, m_Color2[0], m_Color2[1], m_Color2[2]);
+	}
+	if (color3Selector) {
+		glUniform3f(color3Loc, m_Color3[0], m_Color3[1], m_Color3[2]);
+	}
+	if (color4Selector) {
+		glUniform3f(color4Loc, m_Color4[0], m_Color4[1], m_Color4[2]);
+	}
 	// change selected fractal
 	if (fractalSelector) {
 		switch (selectedFractal) {
@@ -294,12 +319,18 @@ void Application::CheckUI()
 		glfwGetWindowSize(m_Window, &width, &height);
 
 		int shaderID = p_selectedShader->GetID();
+
+		//UPDATE ALL UNIFORMS FOR NEW SHADER
 		glUniform2i(resolutionLoc, width, height);
 		glUniform2f(locationLoc, m_Location.x, m_Location.y);
 		glUniform1f(zoomLoc, m_Zoom);
 		glUniform1i(juliaModeLoc, m_juliaMode);
 		glUniform1i(iterationsLoc, m_Iterations);
-
+		glUniform3f(color1Loc, m_Color1[0], m_Color1[1], m_Color1[2]);
+		glUniform3f(color2Loc, m_Color2[0], m_Color2[1], m_Color2[2]);
+		glUniform3f(color3Loc, m_Color3[0], m_Color3[1], m_Color3[2]);
+		glUniform3f(color4Loc, m_Color4[0], m_Color4[1], m_Color4[2]);
+		
 
 	}
 }

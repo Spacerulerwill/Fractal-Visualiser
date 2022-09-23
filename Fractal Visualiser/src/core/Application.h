@@ -38,6 +38,11 @@ private:
 	bool m_juliaMode = false;
 	int m_Iterations = 200;
 
+	float m_Color1[3] = {0.5f, 0.5f, 0.5f};
+	float m_Color2[3] = { 0.5f, 0.5f, 0.5f };
+	float m_Color3[3] = { 1.0f, 1.0f, 1.0f };
+	float m_Color4[3] = { 0.0f, 0.33f, 0.67f };
+
 	// other properties - non uniform
 	bool m_juliaPaused = false;
 
@@ -45,6 +50,11 @@ private:
 	bool iterationsSlider = false;
 	bool juliaModeCheckbox = false;
 	bool fractalSelector = false;
+
+	bool color1Selector= false;
+	bool color2Selector = false;
+	bool color3Selector = false;
+	bool color4Selector = false;
 
 	void ProcessInput();
 	void CheckUI();
@@ -56,6 +66,10 @@ private:
 	unsigned int juliaModeLoc = 0;
 	unsigned int zoomLoc = 0;
 	unsigned int iterationsLoc = 0;
+	unsigned int color1Loc = 0;
+	unsigned int color2Loc = 0;
+	unsigned int color3Loc = 0;
+	unsigned int color4Loc = 0;
 
 	// functions
 	template<typename T>
