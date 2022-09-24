@@ -56,6 +56,18 @@ private:
 	bool color3Selector = false;
 	bool color4Selector = false;
 
+	bool colorPresetSelector = false;
+
+	// color preset
+	int selectedColorPreset = 0;
+	static constexpr unsigned int numColorPresets = 2;
+	const char* colorPresetOptions[numColorPresets] = { "Preset 1", "Black Pink"};
+
+	float colorPresets[numColorPresets][4][3] = {
+		{{0.5f, 0.5f, 0.5f}, {0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.33f, 0.67f}}, // Preset 1
+		{{0.449, 0.0f, 0.5f}, {0.5f, 0.173f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.673f, 0.391f, 0.678f}}
+	};
+
 	void ProcessInput();
 	void CheckUI();
 

@@ -154,6 +154,8 @@ void Application::Run()
 		color3Selector = ImGui::SliderFloat3("Color 3", m_Color3, 0.0f, 1.0f);
 		color4Selector = ImGui::SliderFloat3("Color 4", m_Color4, 0.0f, 1.0f);
 
+		colorPresetSelector = ImGui::Combo("Color Presets", &selectedColorPreset, colorPresetOptions, numColorPresets);
+
 		ImGui::Text
 		("Controls: \n\n"
 		"Arrow Keys - pan\n"
@@ -297,6 +299,34 @@ void Application::CheckUI()
 	if (color4Selector) {
 		glUniform3f(color4Loc, m_Color4[0], m_Color4[1], m_Color4[2]);
 	}
+
+	if (colorPresetSelector) {
+		// set new colors
+		float* col1 = colorPresets[selectedColorPreset][0];
+		m_Color1[0] = col1[0];
+		m_Color1[1] = col1[1];
+		m_Color1[2] = col1[2];
+		glUniform3f(color1Loc, m_Color1[0], m_Color1[1], m_Color1[2]);
+
+		float* col2 = colorPresets[selectedColorPreset][1];
+		m_Color2[0] = col2[0];
+		m_Color2[1] = col2[1];
+		m_Color2[2] = col2[2];
+		glUniform3f(color2Loc, m_Color2[0], m_Color2[1], m_Color2[2]);
+
+		float* col3 = colorPresets[selectedColorPreset][2];
+		m_Color3[0] = col3[0];
+		m_Color3[1] = col3[1];
+		m_Color3[2] = col3[2];
+		glUniform3f(color3Loc, m_Color3[0], m_Color3[1], m_Color3[2]);
+
+		float* col4 = colorPresets[selectedColorPreset][3];
+		m_Color4[0] = col4[0];
+		m_Color4[1] = col4[1];
+		m_Color4[2] = col4[2];
+		glUniform3f(color4Loc, m_Color4[0], m_Color4[1], m_Color4[2]);
+	}
+
 	// change selected fractal
 	if (fractalSelector) {
 		switch (selectedFractal) {
