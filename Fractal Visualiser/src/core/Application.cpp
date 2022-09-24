@@ -120,8 +120,6 @@ void Application::Run()
 	ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
-	float color[] = { 1,2,3 };
-
 	// application loop
 	// ---------------
 	while (!glfwWindowShouldClose(m_Window)) {
@@ -225,16 +223,13 @@ void Application::UpdateShaderMousePosition() {
 	double mouseX, mouseY;
 	glfwGetCursorPos(m_Window, &mouseX, &mouseY);
 
-	mouseX = static_cast<int>(mouseX);
-	mouseY = static_cast<int>(mouseY);
+	float minR = ((-0.5f * width / height) * m_Zoom) + m_Location.x;
+	float maxR = ((0.5f * width / height) * m_Zoom) + m_Location.x;
+	float minI = -0.5f * m_Zoom - m_Location.y;
+	float maxI = 0.5f * m_Zoom - m_Location.y;
 
-	float minR = ((-0.5 * width / height) * m_Zoom) + m_Location.x;
-	float maxR = ((0.5 * width / height) * m_Zoom) + m_Location.x;
-	float minI = -0.5 * m_Zoom - m_Location.y;
-	float maxI = 0.5 * m_Zoom - m_Location.y;
-
-	float xpos = LinearInterpolate(mouseX, width, minR, maxR);
-	float ypos = LinearInterpolate(mouseY, height, minI, maxI);
+	float xpos = LinearInterpolate(static_cast<int>(mouseX), width, minR, maxR);
+	float ypos = LinearInterpolate(static_cast<int>(mouseY), height, minI, maxI);
 
 	glUniform2f(mousePosLoc, xpos, ypos);
 }
