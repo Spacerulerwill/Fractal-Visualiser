@@ -89,6 +89,9 @@ private:
 
 	void UpdateShaderMousePosition();
 
+	// image saving
+	bool save_png_libpng(const char* filename, uint8_t* pixels, int w, int h);
+
 	
 public:
 	Application();

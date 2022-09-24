@@ -1,6 +1,11 @@
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "Application.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
@@ -9,6 +14,8 @@
 #include <vertex/VertexArray.h>
 #include <vertex/VertexBufferLayout.h>
 #include <vertex/VertexBuffer.h>
+
+#include <libpng16/png.h>
 
 #include <iostream>
 
@@ -142,6 +149,7 @@ void Application::Run()
 		// ImGui menu
 		// ----------
 
+
 		ImGui::SetNextWindowSize({ 0,0 });
 		ImGui::Begin("Control Menu");
 		fractalSelector = ImGui::Combo("Fractals", &selectedFractal, fractalOptions, numFractals);
@@ -157,15 +165,15 @@ void Application::Run()
 
 		ImGui::Text
 		("Controls: \n\n"
-		"Arrow Keys - pan\n"
-		"+/- - zoom\n"
-		"J - Julia set mode toggle\n"
-		"F - Julia set pause toggle\n"
-		"R - Reset fractal position\n"
+			"Arrow Keys - pan\n"
+			"+/- - zoom\n"
+			"J - Julia set mode toggle\n"
+			"F - Julia set pause toggle\n"
+			"R - Reset fractal position\n"
 		);
 
 		ImGui::End();
-
+		
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -204,6 +212,17 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 			glUniform2f(ptr->locationLoc, ptr->m_Location.x, ptr->m_Location.y);
 			ptr->m_Zoom = 2.0f;
 			glUniform1f(ptr->zoomLoc, ptr->m_Zoom);
+			break;
+		}
+		case GLFW_KEY_P: {
+			int width, height;
+			glfwGetWindowSize(m_Window, &width, &height);
+
+			uint8_t* pixels = new uint8_t[3 * width * height];
+
+			glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+			ptr->save_png_libpng("image.png", pixels, width, height);
 			break;
 		}
 		}
@@ -356,7 +375,50 @@ void Application::CheckUI()
 		glUniform3f(color2Loc, m_Color2[0], m_Color2[1], m_Color2[2]);
 		glUniform3f(color3Loc, m_Color3[0], m_Color3[1], m_Color3[2]);
 		glUniform3f(color4Loc, m_Color4[0], m_Color4[1], m_Color4[2]);
-		
-
 	}
+}
+
+bool Application::save_png_libpng(const char* filename, uint8_t* pixels, int w, int h)
+{
+	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+	if (!png)
+		return false;
+
+	png_infop info = png_create_info_struct(png);
+	if (!info) {
+		png_destroy_write_struct(&png, &info);
+		return false;
+	}
+
+	FILE* fp = fopen(filename, "wb");
+	if (!fp) {
+		png_destroy_write_struct(&png, &info);
+		return false;
+	}
+
+	png_init_io(png, fp);
+	png_set_IHDR(png, info, w, h, 8 /* depth */, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+		PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+	png_colorp palette = (png_colorp)png_malloc(png, PNG_MAX_PALETTE_LENGTH * sizeof(png_color));
+	if (!palette) {
+		fclose(fp);
+		png_destroy_write_struct(&png, &info);
+		return false;
+	}
+	png_set_PLTE(png, info, palette, PNG_MAX_PALETTE_LENGTH);
+	png_write_info(png, info);
+	png_set_packing(png);
+
+	png_bytepp rows = (png_bytepp)png_malloc(png, h * sizeof(png_bytep));
+	for (int i = 0; i < h; ++i)
+		rows[i] = (png_bytep)(pixels + (h - i) * w * 3);
+
+	png_write_image(png, rows);
+	png_write_end(png, info);
+	png_free(png, palette);
+	png_destroy_write_struct(&png, &info);
+
+	fclose(fp);
+	delete[] rows;
+	return true;
 }
