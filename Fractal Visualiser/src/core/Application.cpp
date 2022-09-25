@@ -187,8 +187,7 @@ void Application::Run()
 
 		CheckUI();
 
-		if (m_juliaMode && !m_juliaPaused)
-			UpdateShaderMousePosition();
+		UpdateShaderMousePosition();
 
 		// glfw: swap buffers and poll IO events (key presses, mouse interactions etc.)
 		// -------------------------------------------------------------------------------
@@ -255,16 +254,24 @@ void Application::UpdateShaderMousePosition() {
 	float minI = -0.5f * m_Zoom - m_Location.y;
 	float maxI = 0.5f * m_Zoom - m_Location.y;
 
-	float xpos = LinearInterpolate(static_cast<int>(mouseX), width, minR, maxR);
-	float ypos = LinearInterpolate(static_cast<int>(mouseY), height, minI, maxI);
-
-	if (m_juliaOrbit) {
-		float newXPos = xpos +  sin(m_juliaOrbitSpeed * glfwGetTime()) * m_juliaOrbitSpeed;
-		float newYPos = ypos + cos(m_juliaOrbitSpeed * glfwGetTime()) * m_juliaOrbitSpeed;
-		glUniform2f(mousePosLoc, newXPos, newYPos);
-	}
-	else {
-		glUniform2f(mousePosLoc, xpos, ypos);
+	if (m_juliaMode) {
+		if (!m_juliaPaused) {
+			mouseXPos = LinearInterpolate(static_cast<int>(mouseX), width, minR, maxR);
+			mouseYPos = LinearInterpolate(static_cast<int>(mouseY), height, minI, maxI);
+			if (m_juliaOrbit) {			
+				float newXPos = mouseXPos + sin(m_juliaOrbitSpeed * glfwGetTime()) * m_juliaOrbitRadius;
+				float newYPos = mouseYPos + cos(m_juliaOrbitSpeed * glfwGetTime()) * m_juliaOrbitRadius;
+				glUniform2f(mousePosLoc, newXPos, newYPos);
+			}
+			else {
+				glUniform2f(mousePosLoc, mouseXPos, mouseYPos);
+			}
+		}
+		else if (m_juliaPaused && m_juliaOrbit) {
+			float newXPos = mouseXPos + sin(m_juliaOrbitSpeed * glfwGetTime()) * m_juliaOrbitRadius;
+			float newYPos = mouseYPos + cos(m_juliaOrbitSpeed * glfwGetTime()) * m_juliaOrbitRadius;
+			glUniform2f(mousePosLoc, newXPos, newYPos);
+		}
 	}
 }
 

@@ -73,6 +73,10 @@ private:
 	float m_juliaOrbitSpeed = 1.0f;
 	float m_juliaOrbitRadius = 1.0f;
 
+	// mouse location
+	float mouseXPos = 0.0f;
+	float mouseYPos = 0.0f;
+
 	void ProcessInput();
 	void CheckUI();
 
