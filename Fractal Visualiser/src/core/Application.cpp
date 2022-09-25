@@ -163,6 +163,14 @@ void Application::Run()
 
 		colorPresetSelector = ImGui::Combo("Color Presets", &selectedColorPreset, colorPresetOptions, numColorPresets);
 
+		if (m_juliaMode) {
+			ImGui::Checkbox("Julia Orbit", &m_juliaOrbit);
+			if (m_juliaOrbit) {
+				ImGui::SliderFloat("Orbit Radius", &m_juliaOrbitRadius, 0.01f, 5.0f);
+				ImGui::SliderFloat("Orbit Speed", &m_juliaOrbitSpeed, 0.1f, 10.0f);
+			}
+		}
+
 		ImGui::Text
 		("Controls: \n\n"
 			"Arrow Keys - pan\n"
@@ -250,7 +258,14 @@ void Application::UpdateShaderMousePosition() {
 	float xpos = LinearInterpolate(static_cast<int>(mouseX), width, minR, maxR);
 	float ypos = LinearInterpolate(static_cast<int>(mouseY), height, minI, maxI);
 
-	glUniform2f(mousePosLoc, xpos, ypos);
+	if (m_juliaOrbit) {
+		float newXPos = xpos +  sin(m_juliaOrbitSpeed * glfwGetTime()) * m_juliaOrbitSpeed;
+		float newYPos = ypos + cos(m_juliaOrbitSpeed * glfwGetTime()) * m_juliaOrbitSpeed;
+		glUniform2f(mousePosLoc, newXPos, newYPos);
+	}
+	else {
+		glUniform2f(mousePosLoc, xpos, ypos);
+	}
 }
 
 std::unique_ptr<Application>& Application::GetInstance() {

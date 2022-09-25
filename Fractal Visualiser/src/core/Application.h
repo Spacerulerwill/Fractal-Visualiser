@@ -68,6 +68,11 @@ private:
 		{{0.449f, 0.0f, 0.5f}, {0.5f, 0.173f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.673f, 0.391f, 0.678f}}
 	};
 
+	// julia set orbitals
+	bool m_juliaOrbit = false;
+	float m_juliaOrbitSpeed = 1.0f;
+	float m_juliaOrbitRadius = 1.0f;
+
 	void ProcessInput();
 	void CheckUI();
 
