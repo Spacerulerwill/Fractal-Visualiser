@@ -53,6 +53,8 @@ T Application::LinearInterpolate(int x, int width, T minR, T maxR) {
 
 void Application::Run()
 {
+	srand(static_cast<unsigned int> (time(NULL)));
+
 	if (!glfwInit()) {
 		std::cout << "Failed to intialise GLFW! Aborting..." << std::endl;
 		std::exit(-1);
@@ -167,11 +169,27 @@ void Application::Run()
 			m_isJuliaModeCheckboxUsed = ImGui::Checkbox("Julia Set Mode", &m_isJuliaMode);
 
 			m_isColor1SelectorUsed = ImGui::SliderFloat3("Color 1", m_Color1, 0.0f, 1.0f);
+			ImGui::SameLine();
+			m_isRandomiseColor1ButtonPressed = ImGui::Button("Randomise##Color 1");
+
 			m_isColor2SelectorUsed = ImGui::SliderFloat3("Color 2", m_Color2, 0.0f, 1.0f);
+			ImGui::SameLine();
+			m_isRandomiseColor2ButtonPressed = ImGui::Button("Randomise##Color 2");
+
 			m_isColor3SelectorUsed = ImGui::SliderFloat3("Color 3", m_Color3, 0.0f, 1.0f);
+			ImGui::SameLine();
+			m_isRandomiseColor3ButtonPressed = ImGui::Button("Randomise##Color 3");
+
 			m_isColor4SelectorUsed = ImGui::SliderFloat3("Color 4", m_Color4, 0.0f, 1.0f);
+			ImGui::SameLine();
+			m_isRandomiseColor4ButtonPressed = ImGui::Button("Randomise##Color 4");
+
 
 			m_isColorPresetSelectorUsed = ImGui::Combo("Color Presets", &m_SelectedColorPreset, m_ColorPresetOptions, c_NumColorPresets);
+
+			m_isRandomiseAllColorsButtonPressed = ImGui::Button("Randomise All Colors");
+			ImGui::SameLine();
+			m_isSavePresetButtonPressed = ImGui::Button("Save Preset");
 
 			if (m_isJuliaMode) {
 				ImGui::Checkbox("Julia Orbit", &m_isJuliaOrbitOn);
@@ -310,6 +328,55 @@ std::unique_ptr<Application>& Application::GetInstance() {
     return Application::s_Instance;
 }
 
+void Application::RandomiseColor1()
+{
+	float r, g, b;
+	r = (float)rand() / RAND_MAX;
+	g = (float)rand() / RAND_MAX;
+	b = (float)rand() / RAND_MAX;
+
+	m_Color1[0] = r;
+	m_Color1[1] = g;
+	m_Color1[2] = b;
+	glUniform3f(m_Color1Loc, r, g, b);
+}
+
+void Application::RandomiseColor2()
+{
+	float r, g, b;
+	r = (float)rand() / RAND_MAX;
+	g = (float)rand() / RAND_MAX;
+	b = (float)rand() / RAND_MAX;
+
+	m_Color2[0] = r;
+	m_Color2[1] = g;
+	m_Color2[2] = b;
+	glUniform3f(m_Color2Loc, r, g, b);
+}
+void Application::RandomiseColor3()
+{
+	float r, g, b;
+	r = (float)rand() / RAND_MAX;
+	g = (float)rand() / RAND_MAX;
+	b = (float)rand() / RAND_MAX;
+
+	m_Color3[0] = r;
+	m_Color3[1] = g;
+	m_Color3[2] = b;
+	glUniform3f(m_Color3Loc, r, g, b);
+}
+void Application::RandomiseColor4()
+{
+	float r, g, b;
+	r = (float)rand() / RAND_MAX;
+	g = (float)rand() / RAND_MAX;
+	b = (float)rand() / RAND_MAX;
+
+	m_Color4[0] = r;
+	m_Color4[1] = g;
+	m_Color4[2] = b;
+	glUniform3f(m_Color4Loc, r, g, b);
+}
 void Application::ProcessInput()
 {
 	if (glfwGetKey(p_Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -355,14 +422,32 @@ void Application::CheckUI()
 	if (m_isColor1SelectorUsed) {
 		glUniform3f(m_Color1Loc, m_Color1[0], m_Color1[1], m_Color1[2]);
 	}
+	if (m_isRandomiseColor1ButtonPressed) {
+		RandomiseColor1();
+	}
+
 	if (m_isColor2SelectorUsed) {
 		glUniform3f(m_Color2Loc, m_Color2[0], m_Color2[1], m_Color2[2]);
 	}
+
+	if (m_isRandomiseColor2ButtonPressed) {
+		RandomiseColor2();
+	}
+
 	if (m_isColor3SelectorUsed) {
 		glUniform3f(m_Color3Loc, m_Color3[0], m_Color3[1], m_Color3[2]);
 	}
+
+	if (m_isRandomiseColor3ButtonPressed) {
+		RandomiseColor3();
+		std::cout << "hello!";
+	}
+
 	if (m_isColor4SelectorUsed) {
 		glUniform3f(m_Color4Loc, m_Color4[0], m_Color4[1], m_Color4[2]);
+	}
+	if (m_isRandomiseColor4ButtonPressed) {
+		RandomiseColor4();
 	}
 
 	if (m_isColorPresetSelectorUsed) {
@@ -390,6 +475,13 @@ void Application::CheckUI()
 		m_Color4[1] = col4[1];
 		m_Color4[2] = col4[2];
 		glUniform3f(m_Color4Loc, m_Color4[0], m_Color4[1], m_Color4[2]);
+	}
+
+	if (m_isRandomiseAllColorsButtonPressed) {
+		RandomiseColor1();
+		RandomiseColor2();
+		RandomiseColor3();
+		RandomiseColor4();
 	}
 
 	// change selected fractal

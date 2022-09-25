@@ -66,7 +66,15 @@ private:
 	bool m_isColor3SelectorUsed = false;
 	bool m_isColor4SelectorUsed = false;
 
+	bool m_isRandomiseColor1ButtonPressed = false;
+	bool m_isRandomiseColor2ButtonPressed = false;
+	bool m_isRandomiseColor3ButtonPressed = false;
+	bool m_isRandomiseColor4ButtonPressed = false;
+
 	bool m_isColorPresetSelectorUsed = false;
+
+	bool m_isRandomiseAllColorsButtonPressed = false;
+	bool m_isSavePresetButtonPressed = false;
 
 	// color preset
 	int m_SelectedColorPreset = 0;
@@ -110,6 +118,12 @@ private:
 
 	// image saving
 	bool save_png_libpng(const char* filename, uint8_t* pixels, int w, int h);
+
+	void RandomiseColor1();
+	void RandomiseColor2();
+	void RandomiseColor3();
+	void RandomiseColor4();
+
 
 	
 public:
