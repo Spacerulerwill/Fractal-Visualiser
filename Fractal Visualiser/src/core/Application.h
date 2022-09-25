@@ -13,29 +13,30 @@ struct Vec2 {
 class Application
 {
 private:
-	static std::unique_ptr<Application> m_Instance;
+	static std::unique_ptr<Application> s_Instance;
 
 	// callbacks
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 	// shaders
-	Shader m_mandelbrotShader;
-	Shader m_burningshipShader;
-	Shader m_tricornShader;
-	Shader* p_selectedShader = nullptr;
+	Shader m_MandelbrotShader;
+	Shader m_BurningshipShader;
+	Shader m_TricornShader;
+	Shader* p_SelectedShader = nullptr;
 
-	static GLFWwindow* m_Window;
+	static GLFWwindow* p_Window;
 
 	// fractal selection
-	int selectedFractal = 0;
-	static constexpr unsigned int numFractals = 3;
-	const char* fractalOptions[numFractals] = {"Mandelbrot", "Burning Ship", "Tricorn"};
+	int p_SelectedFractal = 0;
+	static constexpr unsigned int c_NumFractals = 3;
+	const char* m_FractalOptions[c_NumFractals] = {"Mandelbrot", "Burning Ship", "Tricorn"};
 
 	// fractal properties - uniforms
 	Vec2 m_Location  = {0.0f, 0.0f};
 	float m_Zoom = 2.0f;
-	bool m_juliaMode = false;
+	bool m_isJuliaMode = false;
 	int m_Iterations = 200;
 
 	float m_Color1[3] = {0.5f, 0.5f, 0.5f};
@@ -44,55 +45,62 @@ private:
 	float m_Color4[3] = { 0.0f, 0.33f, 0.67f };
 
 	// other properties - non uniform
-	bool m_juliaPaused = false;
+	bool m_isJuliaPaused = false;
+
+	float m_MinR = 0.0f;
+	float m_MaxR = 0.0f;
+	float m_MinI = 0.0f;
+	float m_MaxI = 0.0f;
+	int m_ScreenWidth = 0;
+	int m_ScreenHeight = 0;
 
 	// ui elements
-	bool m_renderGUI = true;
+	bool m_shouldRenderGUI = true;
 
-	bool iterationsSlider = false;
-	bool juliaModeCheckbox = false;
-	bool fractalSelector = false;
+	bool m_isIterationsSliderUsed = false;
+	bool m_isJuliaModeCheckboxUsed = false;
+	bool m_isFractalSelectorUsed = false;
 
-	bool color1Selector= false;
-	bool color2Selector = false;
-	bool color3Selector = false;
-	bool color4Selector = false;
+	bool m_isColor1SelectorUsed = false;
+	bool m_isColor2SelectorUsed = false;
+	bool m_isColor3SelectorUsed = false;
+	bool m_isColor4SelectorUsed = false;
 
-	bool colorPresetSelector = false;
+	bool m_isColorPresetSelectorUsed = false;
 
 	// color preset
-	int selectedColorPreset = 0;
-	static constexpr unsigned int numColorPresets = 2;
-	const char* colorPresetOptions[numColorPresets] = { "Preset 1", "Black Pink"};
+	int m_SelectedColorPreset = 0;
+	static constexpr unsigned int c_NumColorPresets = 2;
+	const char* m_ColorPresetOptions[c_NumColorPresets] = { "Preset 1", "Black Pink"};
 
-	float colorPresets[numColorPresets][4][3] = {
+	float m_ColorPresets[c_NumColorPresets][4][3] = {
 		{{0.5f, 0.5f, 0.5f}, {0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.33f, 0.67f}}, // Preset 1
 		{{0.449f, 0.0f, 0.5f}, {0.5f, 0.173f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.673f, 0.391f, 0.678f}}
 	};
 
 	// julia set orbitals
-	bool m_juliaOrbit = false;
-	float m_juliaOrbitSpeed = 1.0f;
-	float m_juliaOrbitRadius = 1.0f;
+	bool m_isJuliaOrbitOn = false;
+	float m_JuliaOrbitSpeed = 1.0f;
+	float m_JuliaOrbitRadius = 1.0f;
 
 	// mouse location
-	float mouseXPos = 0.0f;
-	float mouseYPos = 0.0f;
+	float m_MouseXPos = 0.0f;
+	float m_MouseYPos = 0.0f;
 
 	void ProcessInput();
 	void CheckUI();
 
 	// uniform locations
-	static unsigned int resolutionLoc;
-	unsigned int locationLoc = 0;
-	static unsigned int mousePosLoc;
-	unsigned int juliaModeLoc = 0;
-	unsigned int zoomLoc = 0;
-	unsigned int iterationsLoc = 0;
-	unsigned int color1Loc = 0;
-	unsigned int color2Loc = 0;
-	unsigned int color3Loc = 0;
-	unsigned int color4Loc = 0;
+	unsigned int m_ResolutionLoc = 0;
+	unsigned int m_LocationLoc = 0;
+	unsigned int m_MousePosLoc = 0;
+	unsigned int m_JuliaModeLoc = 0;
+	unsigned int m_ZoomLoc = 0;
+	unsigned int m_IterationsLoc = 0;
+	unsigned int m_Color1Loc = 0;
+	unsigned int m_Color2Loc = 0;
+	unsigned int m_Color3Loc = 0;
+	unsigned int m_Color4Loc = 0;
 
 	// functions
 	template<typename T>
