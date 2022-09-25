@@ -18,6 +18,7 @@
 #include <libpng16/png.h>
 
 #include <iostream>
+#include <sstream>
 
 const unsigned int SCREEN_WIDTH = 1280;
 const unsigned int SCREEN_HEIGHT = 720;
@@ -120,6 +121,7 @@ void Application::Run()
 
 	glUniform2i(resolutionLoc, SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	// ImGui context creationg and start up
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.IniFilename = NULL; // disable imgui.ini
@@ -136,6 +138,7 @@ void Application::Run()
 
 		// render
 		// ------
+
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -143,48 +146,53 @@ void Application::Run()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// draw quad to render fractal too
+		// draw quad to render fractal too - main framebuffer
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// ImGui menu
 		// ----------
 
+		if (m_renderGUI) {
 
-		ImGui::SetNextWindowSize({ 0,0 });
-		ImGui::Begin("Control Menu");
-		fractalSelector = ImGui::Combo("Fractals", &selectedFractal, fractalOptions, numFractals);
-		iterationsSlider = ImGui::SliderInt("Iterations", &m_Iterations, 0, 10000);
-		juliaModeCheckbox = ImGui::Checkbox("Julia Set Mode", &m_juliaMode);
+			ImGui::SetNextWindowSize({ 0,0 });
 
-		color1Selector = ImGui::SliderFloat3("Color 1", m_Color1, 0.0f, 1.0f);
-		color2Selector = ImGui::SliderFloat3("Color 2", m_Color2, 0.0f, 1.0f);
-		color3Selector = ImGui::SliderFloat3("Color 3", m_Color3, 0.0f, 1.0f);
-		color4Selector = ImGui::SliderFloat3("Color 4", m_Color4, 0.0f, 1.0f);
+			ImGui::Begin("Control Menu");
+			fractalSelector = ImGui::Combo("Fractals", &selectedFractal, fractalOptions, numFractals);
+			iterationsSlider = ImGui::SliderInt("Iterations", &m_Iterations, 0, 10000);
+			juliaModeCheckbox = ImGui::Checkbox("Julia Set Mode", &m_juliaMode);
 
-		colorPresetSelector = ImGui::Combo("Color Presets", &selectedColorPreset, colorPresetOptions, numColorPresets);
+			color1Selector = ImGui::SliderFloat3("Color 1", m_Color1, 0.0f, 1.0f);
+			color2Selector = ImGui::SliderFloat3("Color 2", m_Color2, 0.0f, 1.0f);
+			color3Selector = ImGui::SliderFloat3("Color 3", m_Color3, 0.0f, 1.0f);
+			color4Selector = ImGui::SliderFloat3("Color 4", m_Color4, 0.0f, 1.0f);
 
-		if (m_juliaMode) {
-			ImGui::Checkbox("Julia Orbit", &m_juliaOrbit);
-			if (m_juliaOrbit) {
-				ImGui::SliderFloat("Orbit Radius", &m_juliaOrbitRadius, 0.01f, 5.0f);
-				ImGui::SliderFloat("Orbit Speed", &m_juliaOrbitSpeed, 0.1f, 10.0f);
+			colorPresetSelector = ImGui::Combo("Color Presets", &selectedColorPreset, colorPresetOptions, numColorPresets);
+
+			if (m_juliaMode) {
+				ImGui::Checkbox("Julia Orbit", &m_juliaOrbit);
+				if (m_juliaOrbit) {
+					ImGui::SliderFloat("Orbit Radius", &m_juliaOrbitRadius, 0.01f, 5.0f);
+					ImGui::SliderFloat("Orbit Speed", &m_juliaOrbitSpeed, 0.1f, 10.0f);
+				}
 			}
+
+			ImGui::Text
+			("Controls: \n\n"
+				"Arrow Keys - pan\n"
+				"+/- - zoom\n"
+				"J - Julia set mode toggle\n"
+				"F - Julia set pause toggle\n"
+				"R - Reset fractal position\n"
+				"H - Toggle GUI visibility (useful for screenshots and videos)\n"
+				"P - Take a screenshot"
+			);
+			ImGui::End();
 		}
 
-		ImGui::Text
-		("Controls: \n\n"
-			"Arrow Keys - pan\n"
-			"+/- - zoom\n"
-			"J - Julia set mode toggle\n"
-			"F - Julia set pause toggle\n"
-			"R - Reset fractal position\n"
-		);
-
-		ImGui::End();
 		
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+	
 		CheckUI();
 
 		UpdateShaderMousePosition();
@@ -194,7 +202,6 @@ void Application::Run()
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	}
-
 	glfwTerminate();
 
 }
@@ -228,9 +235,20 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 			uint8_t* pixels = new uint8_t[3 * width * height];
 
 			glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+			
+			// create name
+			std::stringstream stream; 
+			stream << ptr->fractalOptions[ptr->selectedFractal];
+			if (ptr->m_juliaMode)
+				stream << " Julia Set";
+			stream << " at " << ptr->m_Location.x << " + " << ptr->m_Location.y << "i.png";
+			std::string result = stream.str();
+			ptr->save_png_libpng(result.c_str(), pixels, width, height);
 
-			ptr->save_png_libpng("image.png", pixels, width, height);
 			break;
+		}
+		case GLFW_KEY_H: {
+			ptr->m_renderGUI = !ptr->m_renderGUI;
 		}
 		}
 	}

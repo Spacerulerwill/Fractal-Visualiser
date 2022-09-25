@@ -47,6 +47,8 @@ private:
 	bool m_juliaPaused = false;
 
 	// ui elements
+	bool m_renderGUI = true;
+
 	bool iterationsSlider = false;
 	bool juliaModeCheckbox = false;
 	bool fractalSelector = false;
