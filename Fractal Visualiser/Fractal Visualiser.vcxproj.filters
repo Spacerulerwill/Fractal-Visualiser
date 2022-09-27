@@ -77,5 +77,6 @@
     <None Include="res\shaders\burningship.shader" />
     <None Include="res\shaders\mandelbrot.shader" />
     <None Include="res\shaders\tricorn.shader" />
+    <None Include="res\shaders\mandelbulb.shader" />
   </ItemGroup>
 </Project>

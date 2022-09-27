@@ -24,14 +24,15 @@ private:
 	Shader m_MandelbrotShader;
 	Shader m_BurningshipShader;
 	Shader m_TricornShader;
+	Shader m_MandelbulbShader;
 	Shader* p_SelectedShader = nullptr;
 
 	static GLFWwindow* p_Window;
 
 	// fractal selection
 	int p_SelectedFractal = 0;
-	static constexpr unsigned int c_NumFractals = 3;
-	const char* m_FractalOptions[c_NumFractals] = {"Mandelbrot", "Burning Ship", "Tricorn"};
+	static constexpr unsigned int c_NumFractals = 4;
+	const char* m_FractalOptions[c_NumFractals] = {"Mandelbrot", "Burning Ship", "Tricorn", "Mandelbulb"};
 
 	// fractal properties - uniforms
 	Vec2 m_Location  = {0.0f, 0.0f};

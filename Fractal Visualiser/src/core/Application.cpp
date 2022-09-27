@@ -91,6 +91,9 @@ void Application::Run()
 	m_TricornShader = Shader("res/shaders/tricorn.shader");
 	m_TricornShader.InitShader();
 
+	m_MandelbulbShader = Shader("res/shaders/mandelbulb.shader");
+	m_MandelbulbShader.InitShader();
+
 	p_SelectedShader = &m_MandelbrotShader;
 	p_SelectedShader->Bind();
 
@@ -183,7 +186,6 @@ void Application::Run()
 			m_isColor4SelectorUsed = ImGui::SliderFloat3("Color 4", m_Color4, 0.0f, 1.0f);
 			ImGui::SameLine();
 			m_isRandomiseColor4ButtonPressed = ImGui::Button("Randomise##Color 4");
-
 
 			m_isColorPresetSelectorUsed = ImGui::Combo("Color Presets", &m_SelectedColorPreset, m_ColorPresetOptions, c_NumColorPresets);
 
@@ -497,6 +499,10 @@ void Application::CheckUI()
 		}
 		case 2: {
 			p_SelectedShader = &m_TricornShader;
+			break;
+		}
+		case 3: {
+			p_SelectedShader = &m_MandelbulbShader;
 			break;
 		}
 		}

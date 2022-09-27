@@ -15,17 +15,16 @@ void main()
 
 #define B 4.
 
-uniform ivec2 resolution;
+uniform ivec2 resolution = ivec2(1280, 720);
 uniform vec2 location = vec2(0, 0);
-uniform vec2 mousePos;
+uniform vec2 mousePos = vec2(0, 0);
 uniform bool juliaMode = false;
-uniform float zoom  = 2.0;
+uniform float zoom = 2.0;
 uniform int iterations = 200;
 uniform vec3 color_1 = vec3(0.5);
 uniform vec3 color_2 = vec3(0.5);
 uniform vec3 color_3 = vec3(1.0);
 uniform vec3 color_4 = vec3(0.0, 0.33, 0.67);
-
 out vec4 FragColor;
 
 vec2 conjsquare(vec2 z)

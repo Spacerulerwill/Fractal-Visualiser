@@ -154,6 +154,7 @@
     <None Include="res\shaders\burningship.shader" />
     <None Include="res\shaders\fractal.shader" />
     <None Include="res\shaders\mandelbrot.shader" />
+    <None Include="res\shaders\mandelbulb.shader" />
     <None Include="res\shaders\tricorn.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
