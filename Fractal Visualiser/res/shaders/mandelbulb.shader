@@ -70,19 +70,15 @@ float RayMarch(vec3 ro, vec3 rd)
     return dO;
 }
 
-float softshadow(vec3 ro, vec3 rd, float mint, float maxt, float k)
+float shadow(vec3 ro, vec3 rd, int k)
 {
     float res = 1.0;
-    float ph = 1e20;
-    for (float t = mint; t < maxt; )
+    for (float t = 0; t < MAX_STEPS; )
     {
         float h = GetDist(ro + rd * t);
         if (h < 0.001)
             return 0.0;
-        float y = h * h / (2.0 * ph);
-        float d = sqrt(h * h - y * y);
-        res = min(res, k * d / max(0.0, t - y));
-        ph = h;
+        res = min(res, k * h / t);
         t += h;
     }
     return res;
@@ -98,10 +94,9 @@ float CalculateDiffuseLighting(vec3 p)
     float dif = dot(n, l); // Diffuse light
     dif = clamp(dif, 0., 1.); // Clamp so it doesnt go below 0
 
-    // Shadows
-    float d = RayMarch(p + n * SURFACE_DIST * 2., l);
+    float d = shadow(p + n * SURFACE_DIST * 2., l, 2);
 
-    if (d < length(lightPos - p)) dif = 0;
+    dif *= d;
 
     return dif;
 }
