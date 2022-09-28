@@ -514,6 +514,17 @@ void Application::CheckUI()
 		int shaderID = p_SelectedShader->GetID();
 
 		//UPDATE ALL UNIFORMS FOR NEW SHADER
+		m_ResolutionLoc = glGetUniformLocation(shaderID, "resolution");
+		m_LocationLoc = glGetUniformLocation(shaderID, "location");
+		m_MousePosLoc = glGetUniformLocation(shaderID, "mousePos");
+		m_JuliaModeLoc = glGetUniformLocation(shaderID, "juliaMode");
+		m_ZoomLoc = glGetUniformLocation(shaderID, "zoom");
+		m_IterationsLoc = glGetUniformLocation(shaderID, "iterations");
+		m_Color1Loc = glGetUniformLocation(shaderID, "color_1");
+		m_Color2Loc = glGetUniformLocation(shaderID, "color_2");
+		m_Color3Loc = glGetUniformLocation(shaderID, "color_3");
+		m_Color4Loc = glGetUniformLocation(shaderID, "color_4");
+
 		glUniform2i(m_ResolutionLoc, width, height);
 		glUniform2f(m_LocationLoc, m_Location.x, m_Location.y);
 		glUniform1f(m_ZoomLoc, m_Zoom);

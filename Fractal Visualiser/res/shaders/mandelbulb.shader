@@ -23,7 +23,6 @@ uniform vec3 color_1 = vec3(0.5);
 uniform vec3 color_2 = vec3(0.5);
 uniform vec3 color_3 = vec3(1.0);
 uniform vec3 color_4 = vec3(0.0, 0.33, 0.67);
-uniform int time;
 
 out vec4 FragColor;
 
@@ -105,7 +104,7 @@ void main()
 {
     vec2 uv = (gl_FragCoord.xy - .5 * resolution.xy) / resolution.y;
     vec3 ro = vec3(0, 1, 0); // Ray Origin/ Camera
-    vec3 rd = normalize(vec3(uv.x, uv.y, 1));
+    vec3 rd = vec3(uv.x, uv.y, 1);
     float d = RayMarch(ro, rd); // Distance
 
 
@@ -116,5 +115,5 @@ void main()
     vec3 color = vec3(diff);
 
     // Set the output color
-    gl_FragColor = vec4(color, 1.0);
-}
+    FragColor = vec4(color, 1.0);
+} 
