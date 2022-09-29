@@ -94,20 +94,10 @@ void Application::Run()
 	m_MandelbulbShader = Shader("res/shaders/mandelbulb.shader");
 	m_MandelbulbShader.InitShader();
 
-	p_SelectedShader = &m_MandelbrotShader;
+	p_SelectedShader = &m_MandelbulbShader;
 	p_SelectedShader->Bind();
 
-	int shaderID = p_SelectedShader->GetID();
-	m_ResolutionLoc = glGetUniformLocation(shaderID, "resolution");
-	m_LocationLoc = glGetUniformLocation(shaderID, "location");
-	m_MousePosLoc = glGetUniformLocation(shaderID, "mousePos");
-	m_JuliaModeLoc = glGetUniformLocation(shaderID, "juliaMode");
-	m_ZoomLoc = glGetUniformLocation(shaderID, "zoom");
-	m_IterationsLoc = glGetUniformLocation(shaderID, "iterations");
-	m_Color1Loc = glGetUniformLocation(shaderID, "color_1");
-	m_Color2Loc = glGetUniformLocation(shaderID, "color_2");
-	m_Color3Loc = glGetUniformLocation(shaderID, "color_3");
-	m_Color4Loc = glGetUniformLocation(shaderID, "color_4");
+	UpdateShaderUniformLocations();
 
 	// create buffers for rendering the quad
 	VertexBufferLayout layout;
@@ -132,12 +122,17 @@ void Application::Run()
 	ImGui_ImplGlfw_InitForOpenGL(p_Window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
+	int frames = 0;
+	unsigned int frameLoc = glGetUniformLocation(m_ShaderID, "time");
+
 	// application loop
 	// ---------------
 	while (!glfwWindowShouldClose(p_Window)) {
 
 		// input handling
 		ProcessInput();
+		frames++;
+		glUniform1i(frameLoc, frames);
 
 		// render
 		// ------
@@ -218,7 +213,6 @@ void Application::Run()
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	
 		CheckUI();
-
 		UpdateShaderMousePosition();
 
 		// glfw: swap buffers and poll IO events (key presses, mouse interactions etc.)
@@ -267,6 +261,8 @@ void Application::key_callback(GLFWwindow* window, int key, int scancode, int ac
 				stream << " Julia Set";
 			stream << " at " << ptr->m_Location.x << " + " << ptr->m_Location.y << "i.png";
 			std::string result = stream.str();
+
+			// save png
 			ptr->save_png_libpng(result.c_str(), pixels, width, height);
 
 			break;
@@ -341,6 +337,23 @@ void Application::RandomiseColor1()
 	m_Color1[1] = g;
 	m_Color1[2] = b;
 	glUniform3f(m_Color1Loc, r, g, b);
+}
+
+void Application::UpdateShaderUniformLocations()
+{
+	m_ShaderID = p_SelectedShader->GetID();
+
+	//UPDATE ALL UNIFORMS FOR NEW SHADER
+	m_ResolutionLoc = glGetUniformLocation(m_ShaderID, "resolution");
+	m_LocationLoc = glGetUniformLocation(m_ShaderID, "location");
+	m_MousePosLoc = glGetUniformLocation(m_ShaderID, "mousePos");
+	m_JuliaModeLoc = glGetUniformLocation(m_ShaderID, "juliaMode");
+	m_ZoomLoc = glGetUniformLocation(m_ShaderID, "zoom");
+	m_IterationsLoc = glGetUniformLocation(m_ShaderID, "iterations");
+	m_Color1Loc = glGetUniformLocation(m_ShaderID, "color_1");
+	m_Color2Loc = glGetUniformLocation(m_ShaderID, "color_2");
+	m_Color3Loc = glGetUniformLocation(m_ShaderID, "color_3");
+	m_Color4Loc = glGetUniformLocation(m_ShaderID, "color_4");
 }
 
 void Application::RandomiseColor2()
@@ -442,7 +455,6 @@ void Application::CheckUI()
 
 	if (m_isRandomiseColor3ButtonPressed) {
 		RandomiseColor3();
-		std::cout << "hello!";
 	}
 
 	if (m_isColor4SelectorUsed) {
@@ -511,19 +523,7 @@ void Application::CheckUI()
 		int width, height;
 		glfwGetWindowSize(p_Window, &width, &height);
 
-		int shaderID = p_SelectedShader->GetID();
-
-		//UPDATE ALL UNIFORMS FOR NEW SHADER
-		m_ResolutionLoc = glGetUniformLocation(shaderID, "resolution");
-		m_LocationLoc = glGetUniformLocation(shaderID, "location");
-		m_MousePosLoc = glGetUniformLocation(shaderID, "mousePos");
-		m_JuliaModeLoc = glGetUniformLocation(shaderID, "juliaMode");
-		m_ZoomLoc = glGetUniformLocation(shaderID, "zoom");
-		m_IterationsLoc = glGetUniformLocation(shaderID, "iterations");
-		m_Color1Loc = glGetUniformLocation(shaderID, "color_1");
-		m_Color2Loc = glGetUniformLocation(shaderID, "color_2");
-		m_Color3Loc = glGetUniformLocation(shaderID, "color_3");
-		m_Color4Loc = glGetUniformLocation(shaderID, "color_4");
+		UpdateShaderUniformLocations();
 
 		glUniform2i(m_ResolutionLoc, width, height);
 		glUniform2f(m_LocationLoc, m_Location.x, m_Location.y);

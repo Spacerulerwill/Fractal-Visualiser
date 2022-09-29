@@ -27,6 +27,8 @@ private:
 	Shader m_MandelbulbShader;
 	Shader* p_SelectedShader = nullptr;
 
+	unsigned int m_ShaderID = 0;
+
 	static GLFWwindow* p_Window;
 
 	// fractal selection
@@ -115,7 +117,9 @@ private:
 	template<typename T>
 	static inline T LinearInterpolate(int x, int width, T minR, T maxR);
 
+	//utility functiosn for app
 	void UpdateShaderMousePosition();
+	void UpdateShaderUniformLocations();
 
 	// image saving
 	bool save_png_libpng(const char* filename, uint8_t* pixels, int w, int h);
